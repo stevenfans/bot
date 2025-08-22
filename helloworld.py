@@ -19,23 +19,50 @@ def retrieve_messages(channelID):
     i = 1 
     print(jsonn[-1])
 
+def chromeProfileInit(): 
+    profile_path = config.profile_path
+    chrome_options = Options()
+    # chrome_options.add_argument("--disable-blink-features=AutomationControlled") # disable automatic bot detection for selenium
+    chrome_options.add_argument(f'user-data-dir={profile_path}')
+    chrome_options.add_argument('--profile-directory=Default')
+    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    chrome_options.add_experimental_option("detach", True)
+    return chrome_options
+
 def webConnect(): 
+    options = chromeProfileInit() 
     service = Service(executable_path="chromedriver.exe")
-    driver = webdriver.Chrome(service=service)
+    driver = webdriver.Chrome(service=service, options=options)
+
+    # # Remove navigator.webdriver
+    # driver.execute_cdp_cmd(
+    #     "Page.addScriptToEvaluateOnNewDocument",
+    #     {
+    #         "source": """
+    #         Object.defineProperty(navigator, 'webdriver', {
+    #         get: () => undefined
+    #         })
+    #         """
+    #     }
+    # )
 
     driver.get("https://www.target.com/p/olipop-spongebob-pineapple-paradise-soda-4pk-12-fl-oz-cans/-/A-94661680")
+    # driver.get("https://www.google.com")
 
+    time.sleep(0.5)
+
+    # input_element = driver.find_element(By.ID, 'addToCartButtonOrTextIdFor94661680')
     input_element = driver.find_element(By.ID, 'addToCartButtonOrTextIdFor94661680')
     input_element.send_keys(Keys.ENTER)
 
-    time.sleep(10)
+    time.sleep(60)
     driver.quit()
 
 def main():
     """
     This function serves as the main entry point of the script.
     """
-    retrieve_messages(config.channelIds)
+    # retrieve_messages(config.channelIds)
     webConnect()
 
 if __name__ == "__main__":
